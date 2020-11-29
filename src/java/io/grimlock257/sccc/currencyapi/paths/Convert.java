@@ -1,12 +1,9 @@
 package io.grimlock257.sccc.currencyapi.paths;
 
-import com.google.gson.Gson;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Map;
-import java.util.TreeMap;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
