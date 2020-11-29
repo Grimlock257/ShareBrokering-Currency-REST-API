@@ -1,4 +1,4 @@
-package io.grimlock257.sccc.currencyapi;
+package io.grimlock257.sccc.currencyapi.paths;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.GET;
