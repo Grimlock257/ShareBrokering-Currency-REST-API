@@ -61,7 +61,7 @@ public class Convert {
             String apiKey = "your-api-key";
             String apiQueryParam = "?apiKey=" + apiKey;
             String compactQueryParam = "&compact=ultra";
-            String currencyConversionString = baseCurrency + "_" + targetCurrency;
+            String currencyConversionString = (baseCurrency + "_" + targetCurrency).toUpperCase();
             String conversationQueryParam = "&q=" + currencyConversionString;
 
             // Create URL object
