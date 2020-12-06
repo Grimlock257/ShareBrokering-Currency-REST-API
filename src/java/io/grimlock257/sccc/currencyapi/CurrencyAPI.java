@@ -1,6 +1,7 @@
 package io.grimlock257.sccc.currencyapi;
 
 import io.grimlock257.sccc.currencyapi.jobs.CurrenciesJob;
+import io.grimlock257.sccc.currencyapi.jobs.ExchangeRateJob;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.Singleton;
@@ -19,6 +20,7 @@ public class CurrencyAPI {
     @PostConstruct
     public void construct() {
         CurrenciesJob.initiate();
+        ExchangeRateJob.initiate();
     }
 
     /**
@@ -27,5 +29,6 @@ public class CurrencyAPI {
     @PreDestroy
     public void destroy() {
         CurrenciesJob.getInstance().cancel();
+        ExchangeRateJob.getInstance().cancel();
     }
 }
