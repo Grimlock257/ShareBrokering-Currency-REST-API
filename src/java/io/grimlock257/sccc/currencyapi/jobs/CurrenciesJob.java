@@ -16,6 +16,9 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 
 /**
+ * CurrenciesJob
+ *
+ * Singleton class to handle currency updater task
  *
  * @author Adam Watson
  */

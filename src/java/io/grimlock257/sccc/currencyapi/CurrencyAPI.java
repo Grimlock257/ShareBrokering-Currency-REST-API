@@ -11,13 +11,13 @@ import javax.ejb.Startup;
  */
 @Singleton
 @Startup
-public class Start {
+public class CurrencyAPI {
 
     /**
      * This method will run before the web service container starts up
      */
     @PostConstruct
-    public void init() {
+    public void construct() {
         CurrenciesJob.initiate();
     }
 
