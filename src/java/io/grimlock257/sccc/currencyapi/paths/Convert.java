@@ -40,6 +40,13 @@ public class Convert {
         }
     }
 
+    /**
+     * Retrieve exchange rate from local JSON file
+     *
+     * @param baseCurrency The currency to convert from
+     * @param targetCurrency The currency to convert to
+     * @return The exchange rate between the two currencies, or -1 in the event of error
+     */
     private double getExchangeRate(String baseCurrency, String targetCurrency) {
         try {
             String exchangeRates = new String(Files.readAllBytes(Paths.get("exchangeRates.json")));
