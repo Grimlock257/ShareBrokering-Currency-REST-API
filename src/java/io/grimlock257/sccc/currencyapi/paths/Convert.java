@@ -29,7 +29,7 @@ public class Convert {
             @QueryParam("targetCurrency") String targetCurrency,
             @QueryParam("value") Double value
     ) {
-        Double exchangeRate = getExchangeRate(baseCurrency, targetCurrency);
+        Double exchangeRate = getExchangeRate(baseCurrency.toUpperCase(), targetCurrency.toUpperCase());
 
         if (exchangeRate != -1 && value != null) {
             Double convertedValue = value * exchangeRate;
