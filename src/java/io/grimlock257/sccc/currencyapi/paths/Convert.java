@@ -32,11 +32,13 @@ public class Convert {
         Double exchangeRate = getExchangeRate(baseCurrency.toUpperCase(), targetCurrency.toUpperCase());
 
         if (exchangeRate != -1 && value != null) {
-            Double convertedValue = value * exchangeRate;
-            
-            // LSE prices are listed in GBp (pence), so convert to pounds when target currency is GBP
-            if (baseCurrency.equals("GBp") && targetCurrency.toUpperCase().equals("GBP")) {
-                convertedValue /= 100;
+            Double convertedValue;
+
+            // LSE prices are listed in GBp (pence), so convert to pounds first as exchange rates are based on GBP
+            if (baseCurrency.equals("GBp")) {
+                convertedValue = (value / 100) * exchangeRate;
+            } else {
+                convertedValue = value * exchangeRate;
             }
 
             return "{ \"status\": \"success\", \"value\": " + convertedValue + " }";
