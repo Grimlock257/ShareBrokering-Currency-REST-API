@@ -33,6 +33,11 @@ public class Convert {
 
         if (exchangeRate != -1 && value != null) {
             Double convertedValue = value * exchangeRate;
+            
+            // LSE prices are listed in GBp (pence), so convert to pounds when target currency is GBP
+            if (baseCurrency.equals("GBp") && targetCurrency.toUpperCase().equals("GBP")) {
+                convertedValue /= 100;
+            }
 
             return "{ \"status\": \"success\", \"value\": " + convertedValue + " }";
         } else {
