@@ -1,19 +1,16 @@
 package io.grimlock257.sccc.currencyapi.jobs;
 
 import com.google.gson.Gson;
+import io.grimlock257.sccc.currencyapi.model.ExchangeRatesApiResponse;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.TreeMap;
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
 
 /**
  * ExchangeRateJob
@@ -30,6 +27,8 @@ public class ExchangeRateJob {
 
     private final int EXCHANGE_RATE_UPDATE_INITIAL_DELAY = 0;
     private final int EXCHANGE_RATE_UPDATE_FREQUENCY = 60 * 60 * 1000;
+
+    private final Gson gson = new Gson();
 
     /**
      * ExchangeRateJob constructor
@@ -124,26 +123,10 @@ public class ExchangeRateJob {
                 throw new IOException(conn.getResponseMessage());
             }
 
-            // Retrieve the connection input stream and store as a JsonObject
-            JsonReader jsonReader = Json.createReader(conn.getInputStream());
-            JsonObject jsonObject = jsonReader.readObject();
-            JsonObject jsonExchangeRates = jsonObject.getJsonObject("rates");
+            // Deserialise the JSON response and extract the "rates" field for return
+            ExchangeRatesApiResponse exchangeRatesApiResponse = gson.fromJson(new InputStreamReader(conn.getInputStream()), ExchangeRatesApiResponse.class);
 
-            // TreeMap<String, String> to store currencyCode : currency name in an ordered format
-            Map<String, Double> exchangeRateMap = new TreeMap<>();
-
-            // Iterate over the resutls object, and add the key and currencyName field to the currencyMap
-            for (String key : jsonExchangeRates.keySet()) {
-                double value = jsonExchangeRates.getJsonNumber(key).doubleValue();
-
-                exchangeRateMap.put(key, value);
-            }
-
-            // Using GSON to convert our Map<String, Double> to a JSON representation
-            Gson gson = new Gson();
-            String exchangeRateMapJson = gson.toJson(exchangeRateMap);
-
-            return exchangeRateMapJson;
+            return gson.toJson(exchangeRatesApiResponse.getRates());
         } catch (MalformedURLException e) {
             System.err.println("[CurrencyAPI] Malformed URL: " + e.getMessage());
         } catch (IOException e) {

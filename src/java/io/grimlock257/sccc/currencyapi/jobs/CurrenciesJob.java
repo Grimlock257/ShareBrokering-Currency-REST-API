@@ -1,8 +1,10 @@
 package io.grimlock257.sccc.currencyapi.jobs;
 
 import com.google.gson.Gson;
+import io.grimlock257.sccc.currencyapi.model.CurrenciesApiResponse;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -11,9 +13,6 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeMap;
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
 
 /**
  * CurrenciesJob
@@ -30,6 +29,8 @@ public class CurrenciesJob {
 
     private final int CURRENCIES_INITIAL_DELAY = 0;
     private final int CURRENCIES_UPDATE_FREQUENCY = 12 * 60 * 60 * 1000;
+
+    private final Gson gson = new Gson();
 
     /**
      * CurrenciesJob constructor
@@ -124,23 +125,18 @@ public class CurrenciesJob {
                 throw new IOException(conn.getResponseMessage());
             }
 
-            // Retrieve the connection input stream and store as a JsonObject
-            JsonReader jsonReader = Json.createReader(conn.getInputStream());
-            JsonObject jsonObject = jsonReader.readObject();
-            JsonObject jsonResults = jsonObject.getJsonObject("results");
+            // Deserialise the JSON response into a CurrenciesApiResponse object
+            CurrenciesApiResponse currenciesApiResponse = gson.fromJson(new InputStreamReader(conn.getInputStream()), CurrenciesApiResponse.class);
 
             // TreeMap<String, String> to store currencyCode : currency name in an ordered format
             Map<String, String> currencyMap = new TreeMap<>();
 
-            // Iterate over the resutls object, and add the key and currencyName field to the currencyMap
-            for (String key : jsonResults.keySet()) {
-                String value = jsonResults.getJsonObject(key).getString("currencyName");
-
-                currencyMap.put(key, value);
-            }
+            // Iterate over the response object and reformat into the desired structure
+            currenciesApiResponse.getResults().entrySet().forEach((entry) -> {
+                currencyMap.put(entry.getValue().getId(), entry.getValue().getCurrencyName());
+            });
 
             // Using GSON to convert our Map<String, String> to a JSON representation
-            Gson gson = new Gson();
             String currencyMapJson = gson.toJson(currencyMap);
 
             return currencyMapJson;

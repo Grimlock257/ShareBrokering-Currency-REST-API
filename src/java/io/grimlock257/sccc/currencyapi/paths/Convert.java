@@ -1,6 +1,7 @@
 package io.grimlock257.sccc.currencyapi.paths;
 
 import com.google.gson.Gson;
+import io.grimlock257.sccc.currencyapi.model.ConvertResponse;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -22,6 +23,8 @@ import javax.ws.rs.core.MediaType;
 @Path("convert")
 public class Convert {
 
+    private final Gson gson = new Gson();
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String getJson(
@@ -41,9 +44,9 @@ public class Convert {
                 convertedValue = value * exchangeRate;
             }
 
-            return "{ \"status\": \"success\", \"value\": " + convertedValue + " }";
+            return gson.toJson(new ConvertResponse(convertedValue));
         } else {
-            return "{ \"status\": \"error\" }";
+            return gson.toJson(new ConvertResponse());
         }
     }
 
@@ -58,7 +61,6 @@ public class Convert {
         try {
             String exchangeRates = new String(Files.readAllBytes(Paths.get("exchangeRates.json")));
 
-            Gson gson = new Gson();
             Map<String, Double> exchangeRatesMap = gson.fromJson(exchangeRates, TreeMap.class);
 
             double baseCurrencyRate = exchangeRatesMap.get(baseCurrency);
