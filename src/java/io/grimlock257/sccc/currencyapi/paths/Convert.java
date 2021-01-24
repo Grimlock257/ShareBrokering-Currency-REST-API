@@ -59,7 +59,7 @@ public class Convert {
      */
     private double getExchangeRate(String baseCurrency, String targetCurrency) {
         try {
-            String exchangeRates = new String(Files.readAllBytes(Paths.get("exchangeRates.json")));
+            String exchangeRates = new String(Files.readAllBytes(Paths.get("./sharesBrokering/currency/exchangeRates.json")));
 
             Map<String, Double> exchangeRatesMap = gson.fromJson(exchangeRates, TreeMap.class);
 

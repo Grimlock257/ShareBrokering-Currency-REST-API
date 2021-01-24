@@ -2,6 +2,7 @@ package io.grimlock257.sccc.currencyapi.jobs;
 
 import com.google.gson.Gson;
 import io.grimlock257.sccc.currencyapi.model.ExchangeRatesApiResponse;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -77,7 +78,11 @@ public class ExchangeRateJob {
                 String exchangeRates = requestExchangeRate();
 
                 if (exchangeRates != null) {
-                    try (Writer fileWriter = new FileWriter("exchangeRates.json")) {
+                    // Create the folder if it doesn't already exist
+                    File file = new File("./sharesBrokering/currency/exchangeRates.json");
+                    file.getParentFile().mkdirs();
+
+                    try (Writer fileWriter = new FileWriter(file)) {
                         fileWriter.write(exchangeRates);
 
                         System.out.println("[CurrencyAPI] Exchange rate list update successful");
