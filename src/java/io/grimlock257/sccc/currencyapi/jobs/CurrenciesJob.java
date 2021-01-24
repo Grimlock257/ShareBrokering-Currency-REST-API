@@ -2,6 +2,7 @@ package io.grimlock257.sccc.currencyapi.jobs;
 
 import com.google.gson.Gson;
 import io.grimlock257.sccc.currencyapi.model.CurrenciesApiResponse;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -79,7 +80,11 @@ public class CurrenciesJob {
                 String currencies = requestCurrencies();
 
                 if (currencies != null) {
-                    try (Writer fileWriter = new FileWriter("currencies.json")) {
+                    // Create the folder if it doesn't already exist
+                    File file = new File("./sharesBrokering/currency/currencies.json");
+                    file.getParentFile().mkdirs();
+
+                    try (Writer fileWriter = new FileWriter(file)) {
                         fileWriter.write(currencies);
 
                         System.out.println("[CurrencyAPI] Currency list update successful");

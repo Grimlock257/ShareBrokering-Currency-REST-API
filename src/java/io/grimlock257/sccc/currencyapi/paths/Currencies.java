@@ -40,7 +40,7 @@ public class Currencies {
      */
     private TreeMap getCurrencies() {
         try {
-            return gson.fromJson(new String(Files.readAllBytes(Paths.get("currencies.json"))), TreeMap.class);
+            return gson.fromJson(new String(Files.readAllBytes(Paths.get("./sharesBrokering/currency/currencies.json"))), TreeMap.class);
         } catch (IOException e) {
             System.err.println("[CurrencyAPI] IOException while trying to read currencies.json: " + e.getMessage());
         }
