@@ -1,6 +1,7 @@
 package io.grimlock257.sccc.currencyapi.paths;
 
 import com.google.gson.Gson;
+import io.grimlock257.sccc.currencyapi.jobs.ExchangeRateJob;
 import io.grimlock257.sccc.currencyapi.model.ConvertResponse;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -58,17 +59,26 @@ public class Convert {
      * @return The exchange rate between the two currencies, or -1 in the event of error
      */
     private double getExchangeRate(String baseCurrency, String targetCurrency) {
-        try {
-            String exchangeRates = new String(Files.readAllBytes(Paths.get("./sharesBrokering/currency/exchangeRates.json")));
+        String exchangeRates = null;
 
+        // Try read the exchangeRates file, if fail, attempt a manual update
+        try {
+            exchangeRates = new String(Files.readAllBytes(Paths.get("./sharesBrokering/currency/exchangeRates.json")));
+        } catch (IOException e) {
+            System.err.println("[CurrencyAPI] IOException while trying to read exchangeRates.json: " + e.getMessage());
+            System.err.println("[CurrencyAPI] Attemptting to initiate manual request for exchange rates...");
+
+            ExchangeRateJob.getInstance().updateExchangeRates();
+        }
+
+        // Attempt to read the map and return the converted value
+        try {
             Map<String, Double> exchangeRatesMap = gson.fromJson(exchangeRates, TreeMap.class);
 
             double baseCurrencyRate = exchangeRatesMap.get(baseCurrency);
             double targetCurrencyRate = exchangeRatesMap.get(targetCurrency);
 
             return targetCurrencyRate / baseCurrencyRate;
-        } catch (IOException e) {
-            System.err.println("[CurrencyAPI] IOException while trying to read exchangeRates.json: " + e.getMessage());
         } catch (NullPointerException e) {
             System.err.println("[CurrencyAPI] NPE, likely currency key could not be found in exchange rate map: " + e.getMessage());
         }
