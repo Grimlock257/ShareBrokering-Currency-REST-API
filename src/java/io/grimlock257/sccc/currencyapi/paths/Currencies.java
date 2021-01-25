@@ -1,6 +1,7 @@
 package io.grimlock257.sccc.currencyapi.paths;
 
 import com.google.gson.Gson;
+import io.grimlock257.sccc.currencyapi.jobs.CurrenciesJob;
 import io.grimlock257.sccc.currencyapi.model.CurrenciesResponse;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -39,12 +40,18 @@ public class Currencies {
      * Retrieve currencies from local JSON file
      */
     private TreeMap getCurrencies() {
+        TreeMap currencies = null;
+
+        // Try read the currencies file, if fail, attempt a manual update
         try {
-            return gson.fromJson(new String(Files.readAllBytes(Paths.get("./sharesBrokering/currency/currencies.json"))), TreeMap.class);
+            currencies = gson.fromJson(new String(Files.readAllBytes(Paths.get("./sharesBrokering/currency/currencies.json"))), TreeMap.class);
         } catch (IOException e) {
             System.err.println("[CurrencyAPI] IOException while trying to read currencies.json: " + e.getMessage());
+            System.err.println("[CurrencyAPI] Attemptting to initiate manual request for currencies...");
+
+            CurrenciesJob.getInstance().updateCurrencies();
         }
 
-        return null;
+        return currencies;
     }
 }
