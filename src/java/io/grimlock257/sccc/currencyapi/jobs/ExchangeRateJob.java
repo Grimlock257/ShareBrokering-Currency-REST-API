@@ -73,25 +73,7 @@ public class ExchangeRateJob {
         exchangeRateUpdaterTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                System.out.println("[CurrencyAPI] Updating exchange rates list...");
-
-                String exchangeRates = requestExchangeRate();
-
-                if (exchangeRates != null) {
-                    // Create the folder if it doesn't already exist
-                    File file = new File("./sharesBrokering/currency/exchangeRates.json");
-                    file.getParentFile().mkdirs();
-
-                    try (Writer fileWriter = new FileWriter(file)) {
-                        fileWriter.write(exchangeRates);
-
-                        System.out.println("[CurrencyAPI] Exchange rate list update successful");
-                    } catch (IOException e) {
-                        System.err.println("[CurrencyAPI] IO exception writing exchangeRates.json: " + e.getMessage());
-                    }
-                } else {
-                    System.err.println("[CurrencyAPI] Error retrieving updated exchange rates");
-                }
+                updateExchangeRates();
             }
         }, EXCHANGE_RATE_UPDATE_INITIAL_DELAY, EXCHANGE_RATE_UPDATE_FREQUENCY);
     }
@@ -103,6 +85,31 @@ public class ExchangeRateJob {
         exchangeRateUpdaterTimer.cancel();
         exchangeRateUpdaterTimer.purge();
         exchangeRateUpdaterTimer = null;
+    }
+
+    /**
+     * Request exchange rates from the external API and store the result
+     */
+    public void updateExchangeRates() {
+        System.out.println("[CurrencyAPI] Updating exchange rates list...");
+
+        String exchangeRates = requestExchangeRate();
+
+        if (exchangeRates != null) {
+            // Create the folder if it doesn't already exist
+            File file = new File("./sharesBrokering/currency/exchangeRates.json");
+            file.getParentFile().mkdirs();
+
+            try (Writer fileWriter = new FileWriter(file)) {
+                fileWriter.write(exchangeRates);
+
+                System.out.println("[CurrencyAPI] Exchange rate list update successful");
+            } catch (IOException e) {
+                System.err.println("[CurrencyAPI] IO exception writing exchangeRates.json: " + e.getMessage());
+            }
+        } else {
+            System.err.println("[CurrencyAPI] Error retrieving updated exchange rates");
+        }
     }
 
     /**

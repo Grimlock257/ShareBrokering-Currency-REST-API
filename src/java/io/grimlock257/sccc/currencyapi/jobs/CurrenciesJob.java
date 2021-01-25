@@ -75,25 +75,7 @@ public class CurrenciesJob {
         currenciesUpdaterTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                System.out.println("[CurrencyAPI] Updating currencies list...");
-
-                String currencies = requestCurrencies();
-
-                if (currencies != null) {
-                    // Create the folder if it doesn't already exist
-                    File file = new File("./sharesBrokering/currency/currencies.json");
-                    file.getParentFile().mkdirs();
-
-                    try (Writer fileWriter = new FileWriter(file)) {
-                        fileWriter.write(currencies);
-
-                        System.out.println("[CurrencyAPI] Currency list update successful");
-                    } catch (IOException e) {
-                        System.err.println("[CurrencyAPI] IO exception writing currencies.json: " + e.getMessage());
-                    }
-                } else {
-                    System.err.println("[CurrencyAPI] Error retrieving updated currencies");
-                }
+                updateCurrencies();
             }
         }, CURRENCIES_INITIAL_DELAY, CURRENCIES_UPDATE_FREQUENCY);
     }
@@ -105,6 +87,31 @@ public class CurrenciesJob {
         currenciesUpdaterTimer.cancel();
         currenciesUpdaterTimer.purge();
         currenciesUpdaterTimer = null;
+    }
+
+    /**
+     * Request currencies from the external API and store the result
+     */
+    public void updateCurrencies() {
+        System.out.println("[CurrencyAPI] Updating currencies list...");
+
+        String currencies = requestCurrencies();
+
+        if (currencies != null) {
+            // Create the folder if it doesn't already exist
+            File file = new File("./sharesBrokering/currency/currencies.json");
+            file.getParentFile().mkdirs();
+
+            try (Writer fileWriter = new FileWriter(file)) {
+                fileWriter.write(currencies);
+
+                System.out.println("[CurrencyAPI] Currency list update successful");
+            } catch (IOException e) {
+                System.err.println("[CurrencyAPI] IO exception writing currencies.json: " + e.getMessage());
+            }
+        } else {
+            System.err.println("[CurrencyAPI] Error retrieving updated currencies");
+        }
     }
 
     /**
